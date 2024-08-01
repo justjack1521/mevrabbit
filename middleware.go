@@ -1,4 +1,4 @@
-package pkg
+package mevrabbit
 
 import (
 	"github.com/newrelic/go-agent/v3/newrelic"

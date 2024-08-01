@@ -1,4 +1,4 @@
-package pkg
+package mevrabbit
 
 import (
 	"context"
