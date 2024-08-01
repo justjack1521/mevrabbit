@@ -1,6 +1,6 @@
 module github.com/justjack1521/mevrabbit
 
-go 1.22.3
+go 1.22.1
 
 require (
 	github.com/golang/protobuf v1.5.3 // indirect
