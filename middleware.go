@@ -6,6 +6,44 @@ import (
 	"github.com/wagslane/go-rabbitmq"
 )
 
+func publisherLoggerMiddleWare(logger *logrus.Logger, handler PublishHandler) PublishHandler {
+	return func(ctx *PublisherContext) error {
+
+		var entry = logger.WithFields(logrus.Fields{
+			"exchange":    ctx.exchange,
+			"routing.key": ctx.key,
+			"length":      len(ctx.delivery),
+		})
+
+		if err := handler(ctx); err != nil {
+			entry.WithError(err).Error("Message failed")
+			return err
+		}
+
+		entry.Info("Message published")
+		return nil
+
+	}
+}
+
+func publisherNewRelicMiddleware(handler PublishHandler) PublishHandler {
+	return func(ctx *PublisherContext) error {
+		var txn = newrelic.FromContext(ctx)
+		if txn == nil {
+			return handler(ctx)
+		}
+		segment := newrelic.MessageProducerSegment{
+			StartTime:            txn.StartSegmentNow(),
+			Library:              "RabbitMQ",
+			DestinationType:      newrelic.MessageExchange,
+			DestinationName:      string(ctx.exchange),
+			DestinationTemporary: false,
+		}
+		defer segment.End()
+		return handler(ctx)
+	}
+}
+
 func consumeLoggerMiddleWare(logger *logrus.Logger, handler ConsumerHandler) ConsumerHandler {
 	return func(ctx *ConsumerContext) (rabbitmq.Action, error) {
 		logger.WithFields(logrus.Fields{

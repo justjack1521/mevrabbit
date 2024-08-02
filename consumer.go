@@ -41,7 +41,7 @@ func (s *StandardConsumer) Run() error {
 
 func NewStandardConsumer(conn *rabbitmq.Conn, queue Queue, key RoutingKey, exchange Exchange, handler ConsumerHandler, opts ...func(*rabbitmq.ConsumerOptions)) (*StandardConsumer, error) {
 
-	consumer := &StandardConsumer{
+	var consumer = &StandardConsumer{
 		Queue:      queue,
 		RoutingKey: key,
 		Exchange:   exchange,
@@ -59,8 +59,8 @@ func NewStandardConsumer(conn *rabbitmq.Conn, queue Queue, key RoutingKey, excha
 	if err != nil {
 		return nil, err
 	}
-
 	consumer.actual = actual
+
 	return consumer, nil
 }
 
@@ -108,22 +108,22 @@ func (s *StandardConsumer) WithLogging(logger *logrus.Logger) {
 func ExtractUserID(d rabbitmq.Delivery) (uuid.UUID, error) {
 	id, ok := d.Headers[userIDHeaderKey]
 	if ok == false {
-		return uuid.Nil, errExtractClientIDFromMessageHeader(errClientIDNotFound)
+		return uuid.Nil, errExtractUserIDFromMessageHeader(errUserIDNotFound)
 	}
 	client, err := uuid.FromString(id.(string))
 	if err != nil {
-		return client, errExtractClientIDFromMessageHeader(err)
+		return client, errExtractUserIDFromMessageHeader(err)
 	}
 	return client, nil
 }
 func ExtractPlayerID(d rabbitmq.Delivery) (uuid.UUID, error) {
 	id, ok := d.Headers[playerIDHeaderKey]
 	if ok == false {
-		return uuid.Nil, errExtractClientIDFromMessageHeader(errClientIDNotFound)
+		return uuid.Nil, errExtractPlayerIDFromMessageHeader(errPlayerIDNotFound)
 	}
 	client, err := uuid.FromString(id.(string))
 	if err != nil {
-		return client, errExtractClientIDFromMessageHeader(err)
+		return client, errExtractPlayerIDFromMessageHeader(err)
 	}
 	return client, nil
 }

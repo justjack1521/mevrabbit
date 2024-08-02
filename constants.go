@@ -6,9 +6,13 @@ import (
 )
 
 var (
-	errClientIDNotFound                 = errors.New("client id not found")
-	errExtractClientIDFromMessageHeader = func(err error) error {
-		return fmt.Errorf("failed to extract client id from message header: %w", err)
+	errUserIDNotFound                 = errors.New("user id not found")
+	errExtractUserIDFromMessageHeader = func(err error) error {
+		return fmt.Errorf("failed to extract user id from message header: %w", err)
+	}
+	errPlayerIDNotFound                 = errors.New("player id not found")
+	errExtractPlayerIDFromMessageHeader = func(err error) error {
+		return fmt.Errorf("failed to extract player id from message header: %w", err)
 	}
 )
 
