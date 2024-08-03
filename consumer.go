@@ -51,11 +51,14 @@ func NewStandardConsumer(conn *rabbitmq.Conn, queue Queue, key RoutingKey, excha
 	var options = []func(*rabbitmq.ConsumerOptions){
 		rabbitmq.WithConsumerOptionsRoutingKey(string(key)),
 		rabbitmq.WithConsumerOptionsExchangeName(string(exchange)),
+		rabbitmq.WithConsumerOptionsExchangeDurable,
+		rabbitmq.WithConsumerOptionsExchangeDeclare,
+		rabbitmq.WithConsumerOptionsExchangeKind(string(Direct)),
 	}
 
-	opts = append(opts, options...)
+	var fin = append(options, opts...)
 
-	actual, err := rabbitmq.NewConsumer(conn, string(queue), opts...)
+	actual, err := rabbitmq.NewConsumer(conn, string(queue), fin...)
 	if err != nil {
 		return nil, err
 	}
