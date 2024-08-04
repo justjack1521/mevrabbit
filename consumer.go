@@ -44,7 +44,7 @@ func (s *StandardConsumer) Run() {
 	}()
 	go func() {
 		if err := <-errCh; err != nil {
-			panic(err) // Handle the error (e.g., panic)
+			panic(err)
 		}
 	}()
 }
