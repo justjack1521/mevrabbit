@@ -36,7 +36,17 @@ type StandardConsumer struct {
 }
 
 func (s *StandardConsumer) Run() error {
-	return s.actual.Run(s.standardConsumption())
+	errCh := make(chan error, 1)
+	go func() {
+		err := s.actual.Run(s.standardConsumption())
+		errCh <- err
+		close(errCh)
+	}()
+	err := <-errCh
+	if err != nil {
+		return err
+	}
+	return nil
 }
 
 func NewStandardConsumer(conn *rabbitmq.Conn, queue Queue, key RoutingKey, exchange Exchange, handler ConsumerHandler, opts ...func(*rabbitmq.ConsumerOptions)) (*StandardConsumer, error) {
