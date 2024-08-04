@@ -35,7 +35,7 @@ type StandardConsumer struct {
 	closed     bool
 }
 
-func (s *StandardConsumer) Run() {
+func (s *StandardConsumer) run() {
 	errCh := make(chan error, 1)
 	go func() {
 		err := s.actual.Run(s.standardConsumption())
@@ -73,7 +73,7 @@ func NewStandardConsumer(conn *rabbitmq.Conn, queue Queue, key RoutingKey, excha
 		return nil, err
 	}
 	consumer.actual = actual
-	consumer.Run()
+	consumer.run()
 
 	return consumer, nil
 }
