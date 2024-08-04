@@ -73,6 +73,7 @@ func NewStandardConsumer(conn *rabbitmq.Conn, queue Queue, key RoutingKey, excha
 		return nil, err
 	}
 	consumer.actual = actual
+	consumer.Run()
 
 	return consumer, nil
 }
