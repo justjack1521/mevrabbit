@@ -29,6 +29,7 @@ type Exchange string
 
 const (
 	Client  Exchange = "client"
+	User    Exchange = "user"
 	Social  Exchange = "social"
 	Ranking Exchange = "ranking"
 	Game    Exchange = "game"
@@ -51,9 +52,15 @@ const (
 	BattleComplete     RoutingKey = "battle.complete"
 )
 
+const (
+	UserCreated RoutingKey = "user.created"
+	UserDeleted RoutingKey = "user.deleted"
+)
+
 type Queue string
 
 const (
+	UserUpdate      Queue = "user.update"
 	ClientUpdate    Queue = "client.update"
 	CommentUpdate   Queue = "comment.update"
 	CompanionUpdate Queue = "companion.update"

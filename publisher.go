@@ -46,6 +46,13 @@ func (s *StandardPublisher) Publish(ctx context.Context, bytes []byte, user, pla
 	return s.handler(cont)
 }
 
+func NewUserPublisher(conn *rabbitmq.Conn, options ...func(publisherOptions *rabbitmq.PublisherOptions)) *StandardPublisher {
+	actual, err := newPublisher(conn, User, Direct, options...)
+	if err != nil {
+		panic(err)
+	}
+	return newStandardPublisher(User, Direct, actual)
+}
 func NewClientPublisher(conn *rabbitmq.Conn, options ...func(publisherOptions *rabbitmq.PublisherOptions)) *StandardPublisher {
 	actual, err := newPublisher(conn, Client, Direct, options...)
 	if err != nil {
