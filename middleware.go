@@ -4,7 +4,30 @@ import (
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"github.com/wagslane/go-rabbitmq"
+	"log/slog"
 )
+
+func publisherSloggerMiddleware(slogger *slog.Logger, handler PublishHandler) PublishHandler {
+	return func(ctx *PublisherContext) error {
+
+		var entry = slogger.With(
+			slog.Group("message_attr",
+				slog.String("exchange", string(ctx.exchange)),
+				slog.String("key", string(ctx.key)),
+				slog.Int("length", len(ctx.delivery)),
+			),
+		)
+
+		if err := handler(ctx); err != nil {
+			entry.With("error", err.Error()).ErrorContext(ctx.Context, "message failed")
+			return err
+		}
+
+		entry.InfoContext(ctx.Context, "message published")
+		return nil
+
+	}
+}
 
 func publisherLoggerMiddleWare(logger *logrus.Logger, handler PublishHandler) PublishHandler {
 	return func(ctx *PublisherContext) error {
@@ -16,11 +39,11 @@ func publisherLoggerMiddleWare(logger *logrus.Logger, handler PublishHandler) Pu
 		})
 
 		if err := handler(ctx); err != nil {
-			entry.WithError(err).Error("Message failed")
+			entry.WithError(err).Error("message failed")
 			return err
 		}
 
-		entry.Info("Message published")
+		entry.Info("message published")
 		return nil
 
 	}
@@ -41,6 +64,30 @@ func publisherNewRelicMiddleware(handler PublishHandler) PublishHandler {
 		}
 		defer segment.End()
 		return handler(ctx)
+	}
+}
+
+func consumeSloggerMiddleware(slogger *slog.Logger, handler ConsumerHandler) ConsumerHandler {
+	return func(ctx *ConsumerContext) (rabbitmq.Action, error) {
+
+		var entry = slogger.With(
+			slog.Group("message_attr",
+				slog.String("message_id", ctx.Delivery.MessageId),
+				slog.String("exchange", ctx.Delivery.Exchange),
+				slog.String("key", ctx.Delivery.RoutingKey),
+			),
+		)
+
+		result, err := handler(ctx)
+
+		if err != nil {
+			entry.With("error", err.Error()).ErrorContext(ctx.Context, "failed to consume message")
+		} else {
+			entry.InfoContext(ctx.Context, "message consumed")
+		}
+
+		return result, err
+
 	}
 }
 

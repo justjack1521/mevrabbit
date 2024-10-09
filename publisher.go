@@ -5,6 +5,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/sirupsen/logrus"
 	"github.com/wagslane/go-rabbitmq"
+	"log/slog"
 )
 
 type PublisherContext struct {
@@ -91,6 +92,10 @@ func (s *StandardPublisher) publish(ctx *PublisherContext) error {
 		rabbitmq.WithPublishOptionsHeaders(IdentityPublishingTable(ctx.userID, ctx.playerID)),
 	}
 	return s.actual.PublishWithContext(ctx, ctx.delivery, []string{string(ctx.key)}, options...)
+}
+
+func (s *StandardPublisher) WithSlogging(slogger *slog.Logger) {
+	s.handler = publisherSloggerMiddleware(slogger, s.handler)
 }
 
 func (s *StandardPublisher) WithLogging(logger *logrus.Logger) {

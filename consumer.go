@@ -7,6 +7,7 @@ import (
 	uuid "github.com/satori/go.uuid"
 	"github.com/sirupsen/logrus"
 	"github.com/wagslane/go-rabbitmq"
+	"log/slog"
 )
 
 type ConsumerContext struct {
@@ -113,6 +114,10 @@ func (s *StandardConsumer) Close() {
 
 func (s *StandardConsumer) WithNewRelic(relic *newrelic.Application) {
 	s.handler = consumerNewRelicMiddleWare(relic, s.handler)
+}
+
+func (s *StandardConsumer) WithSlogging(slogger *slog.Logger) {
+	s.handler = consumeSloggerMiddleware(slogger, s.handler)
 }
 
 func (s *StandardConsumer) WithLogging(logger *logrus.Logger) {
