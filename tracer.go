@@ -3,8 +3,8 @@ package mevrabbit
 import "context"
 
 type TransactionTracer interface {
-	NewTransaction(ctx context.Context, name string) (context.Context, Transaction)
-	NewSegment(ctx context.Context) Segment
+	NewRabbitMQTransaction(ctx context.Context, name string) (context.Context, Transaction)
+	NewRabbitMQSegment(ctx context.Context, exchange Exchange) Segment
 }
 
 type Transaction interface {

@@ -52,7 +52,7 @@ func publisherLoggerMiddleWare(logger *logrus.Logger, handler PublishHandler) Pu
 
 func publisherTracerMiddleware(tracer TransactionTracer, handler PublishHandler) PublishHandler {
 	return func(ctx *PublisherContext) error {
-		var segment = tracer.NewSegment(ctx.Context)
+		var segment = tracer.NewRabbitMQSegment(ctx, ctx.exchange)
 		if segment == nil {
 			return handler(ctx)
 		}
@@ -138,7 +138,7 @@ func consumerTracingMiddleware(tracer TransactionTracer, handler ConsumerHandler
 			return handler(ctx)
 		}
 
-		_, txn := tracer.NewTransaction(ctx, fmt.Sprintf("message.%s.%s", ctx.Delivery.RoutingKey, ctx.Delivery.Exchange))
+		_, txn := tracer.NewRabbitMQTransaction(ctx, fmt.Sprintf("message.%s.%s", ctx.Delivery.RoutingKey, ctx.Delivery.Exchange))
 		txn.AddAttribute("user.id", ctx.userID.String())
 		txn.AddAttribute("player.id", ctx.playerID.String())
 		txn.AddAttribute("message.routingKey", ctx.Delivery.RoutingKey)
