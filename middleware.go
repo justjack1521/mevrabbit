@@ -49,6 +49,17 @@ func publisherLoggerMiddleWare(logger *logrus.Logger, handler PublishHandler) Pu
 	}
 }
 
+func publisherTracerMiddleware(tracer TransactionTracer, handler PublishHandler) PublishHandler {
+	return func(ctx *PublisherContext) error {
+		var segment = tracer.NewSegment(ctx.Context)
+		if segment == nil {
+			return handler(ctx)
+		}
+		defer segment.End()
+		return handler(ctx)
+	}
+}
+
 func publisherNewRelicMiddleware(handler PublishHandler) PublishHandler {
 	return func(ctx *PublisherContext) error {
 		var txn = newrelic.FromContext(ctx)

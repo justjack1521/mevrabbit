@@ -95,12 +95,21 @@ func (s *StandardPublisher) publish(ctx *PublisherContext) error {
 }
 
 func (s *StandardPublisher) WithSlogging(slogger *slog.Logger) *StandardPublisher {
-	s.handler = publisherSloggerMiddleware(slogger, s.handler)
+	if slogger != nil {
+		s.handler = publisherSloggerMiddleware(slogger, s.handler)
+	}
 	return s
 }
 
 func (s *StandardPublisher) WithLogging(logger *logrus.Logger) *StandardPublisher {
 	s.handler = publisherLoggerMiddleWare(logger, s.handler)
+	return s
+}
+
+func (s *StandardPublisher) WithTracing(tracer TransactionTracer) *StandardPublisher {
+	if tracer != nil {
+		s.handler = publisherTracerMiddleware(tracer, s.handler)
+	}
 	return s
 }
 

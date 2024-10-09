@@ -113,11 +113,17 @@ func (s *StandardConsumer) Close() {
 }
 
 func (s *StandardConsumer) WithNewRelic(relic *newrelic.Application) *StandardConsumer {
+	if relic == nil {
+		return s
+	}
 	s.handler = consumerNewRelicMiddleWare(relic, s.handler)
 	return s
 }
 
 func (s *StandardConsumer) WithSlogging(slogger *slog.Logger) *StandardConsumer {
+	if slogger == nil {
+		return s
+	}
 	s.handler = consumeSloggerMiddleware(slogger, s.handler)
 	return s
 }
