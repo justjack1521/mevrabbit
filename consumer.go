@@ -112,19 +112,24 @@ func (s *StandardConsumer) Close() {
 	s.actual.Close()
 }
 
-func (s *StandardConsumer) WithNewRelic(relic *newrelic.Application) *StandardConsumer {
-	if relic == nil {
-		return s
+func (s *StandardConsumer) WithTracing(tracer TransactionTracer) *StandardConsumer {
+	if tracer != nil {
+		s.handler = consumerTracingMiddleware(tracer, s.handler)
 	}
-	s.handler = consumerNewRelicMiddleWare(relic, s.handler)
+	return s
+}
+
+func (s *StandardConsumer) WithNewRelic(relic *newrelic.Application) *StandardConsumer {
+	if relic != nil {
+		s.handler = consumerNewRelicMiddleWare(relic, s.handler)
+	}
 	return s
 }
 
 func (s *StandardConsumer) WithSlogging(slogger *slog.Logger) *StandardConsumer {
-	if slogger == nil {
-		return s
+	if slogger != nil {
+		s.handler = consumeSloggerMiddleware(slogger, s.handler)
 	}
-	s.handler = consumeSloggerMiddleware(slogger, s.handler)
 	return s
 }
 

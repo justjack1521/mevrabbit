@@ -1,6 +1,7 @@
 package mevrabbit
 
 import (
+	"fmt"
 	"github.com/newrelic/go-agent/v3/newrelic"
 	"github.com/sirupsen/logrus"
 	"github.com/wagslane/go-rabbitmq"
@@ -127,6 +128,31 @@ func consumeLoggerMiddleWare(logger *logrus.Logger, handler ConsumerHandler) Con
 			}
 		}()
 		return action, err
+	}
+}
+
+func consumerTracingMiddleware(tracer TransactionTracer, handler ConsumerHandler) ConsumerHandler {
+	return func(ctx *ConsumerContext) (rabbitmq.Action, error) {
+
+		if tracer == nil {
+			return handler(ctx)
+		}
+
+		_, txn := tracer.NewTransaction(ctx, fmt.Sprintf("message.%s.%s", ctx.Delivery.RoutingKey, ctx.Delivery.Exchange))
+		txn.AddAttribute("user.id", ctx.userID.String())
+		txn.AddAttribute("player.id", ctx.playerID.String())
+		txn.AddAttribute("message.routingKey", ctx.Delivery.RoutingKey)
+		txn.AddAttribute("message.exchange", ctx.Delivery.Exchange)
+		txn.AddAttribute("message.type", ctx.Delivery.Type)
+
+		action, err := handler(ctx)
+
+		if err != nil {
+			txn.NoticeError(err)
+		}
+		txn.End()
+		return action, err
+
 	}
 }
 
