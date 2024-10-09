@@ -112,16 +112,19 @@ func (s *StandardConsumer) Close() {
 	s.actual.Close()
 }
 
-func (s *StandardConsumer) WithNewRelic(relic *newrelic.Application) {
+func (s *StandardConsumer) WithNewRelic(relic *newrelic.Application) *StandardConsumer {
 	s.handler = consumerNewRelicMiddleWare(relic, s.handler)
+	return s
 }
 
-func (s *StandardConsumer) WithSlogging(slogger *slog.Logger) {
+func (s *StandardConsumer) WithSlogging(slogger *slog.Logger) *StandardConsumer {
 	s.handler = consumeSloggerMiddleware(slogger, s.handler)
+	return s
 }
 
-func (s *StandardConsumer) WithLogging(logger *logrus.Logger) {
+func (s *StandardConsumer) WithLogging(logger *logrus.Logger) *StandardConsumer {
 	s.handler = consumeLoggerMiddleWare(logger, s.handler)
+	return s
 }
 
 func ExtractUserID(d rabbitmq.Delivery) (uuid.UUID, error) {

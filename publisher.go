@@ -94,16 +94,19 @@ func (s *StandardPublisher) publish(ctx *PublisherContext) error {
 	return s.actual.PublishWithContext(ctx, ctx.delivery, []string{string(ctx.key)}, options...)
 }
 
-func (s *StandardPublisher) WithSlogging(slogger *slog.Logger) {
+func (s *StandardPublisher) WithSlogging(slogger *slog.Logger) *StandardPublisher {
 	s.handler = publisherSloggerMiddleware(slogger, s.handler)
+	return s
 }
 
-func (s *StandardPublisher) WithLogging(logger *logrus.Logger) {
+func (s *StandardPublisher) WithLogging(logger *logrus.Logger) *StandardPublisher {
 	s.handler = publisherLoggerMiddleWare(logger, s.handler)
+	return s
 }
 
-func (s *StandardPublisher) WithNewRelic() {
+func (s *StandardPublisher) WithNewRelic() *StandardPublisher {
 	s.handler = publisherNewRelicMiddleware(s.handler)
+	return s
 }
 
 func newStandardPublisher(exchange Exchange, kind ExchangeKind, actual *rabbitmq.Publisher) *StandardPublisher {
