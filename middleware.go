@@ -105,6 +105,7 @@ func consumeSloggerMiddleware(slogger *slog.Logger, handler ConsumerHandler) Con
 
 func consumeLoggerMiddleWare(logger *logrus.Logger, handler ConsumerHandler) ConsumerHandler {
 	return func(ctx *ConsumerContext) (rabbitmq.Action, error) {
+
 		logger.WithFields(logrus.Fields{
 			"exchange":    ctx.Delivery.Exchange,
 			"routing_key": ctx.Delivery.RoutingKey,
@@ -118,13 +119,13 @@ func consumeLoggerMiddleWare(logger *logrus.Logger, handler ConsumerHandler) Con
 					"exchange":    ctx.Delivery.Exchange,
 					"routing_key": ctx.Delivery.RoutingKey,
 					"action":      action,
-				}).WithError(err).Error("Failed to Consume Message")
+				}).WithError(err).Error("failed to consume message")
 			} else {
 				logger.WithFields(logrus.Fields{
 					"exchange":    ctx.Delivery.Exchange,
 					"routing_key": ctx.Delivery.RoutingKey,
 					"action":      action,
-				}).Info("Message Consumed")
+				}).Info("message consumed")
 			}
 		}()
 		return action, err

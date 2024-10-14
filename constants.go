@@ -61,7 +61,8 @@ const (
 type Queue string
 
 const (
-	UserUpdate      Queue = "user.update"
+	UserCreate      Queue = "user.create"
+	UserDelete      Queue = "user.delete"
 	ClientUpdate    Queue = "client.update"
 	CommentUpdate   Queue = "comment.update"
 	CompanionUpdate Queue = "companion.update"
