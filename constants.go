@@ -51,6 +51,7 @@ const (
 	PlayerRental       RoutingKey = "player.rental"
 	PlayerLevel        RoutingKey = "player.level"
 	BattleComplete     RoutingKey = "battle.complete"
+	RankingClaimKey    RoutingKey = "ranking.claim"
 )
 
 const (
@@ -61,20 +62,21 @@ const (
 type Queue string
 
 const (
-	UserCreate      Queue = "user.create"
-	UserDelete      Queue = "user.delete"
-	ClientUpdate    Queue = "client.update"
-	CommentUpdate   Queue = "comment.update"
-	CompanionUpdate Queue = "companion.update"
-	PlayerCreated   Queue = "player.created"
-	PlayerDeleted   Queue = "player.deleted"
-	PositionUpdate  Queue = "position.update"
-	PresenceUpdate  Queue = "presence.update"
-	LevelUpdate     Queue = "level.update"
-	RentalUpdate    Queue = "rental.update"
-	SocialUpdate    Queue = "social.update"
-	RankingUpdate   Queue = "ranking.update"
-	LoadoutUpdate   Queue = "loadout.update"
+	UserCreate         Queue = "user.create"
+	UserDelete         Queue = "user.delete"
+	ClientUpdate       Queue = "client.update"
+	CommentUpdate      Queue = "comment.update"
+	CompanionUpdate    Queue = "companion.update"
+	PlayerCreated      Queue = "player.created"
+	PlayerDeleted      Queue = "player.deleted"
+	PositionUpdate     Queue = "position.update"
+	PresenceUpdate     Queue = "presence.update"
+	LevelUpdate        Queue = "level.update"
+	RentalUpdate       Queue = "rental.update"
+	SocialUpdate       Queue = "social.update"
+	RankingUpdate      Queue = "ranking.update"
+	RankingClaimUpdate Queue = "ranking.claim"
+	LoadoutUpdate      Queue = "loadout.update"
 )
 
 const (
